@@ -1,0 +1,84 @@
+import sqlite3
+
+def init_db():
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+
+    # Create courses table
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS courses (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            part TEXT NOT NULL,
+            semester TEXT NOT NULL,
+            course_code TEXT NOT NULL UNIQUE,
+            course_title TEXT NOT NULL,
+            course_unit INTEGER NOT NULL
+        )
+    ''')
+
+    # Create gpa_records table
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS gpa_records (
+            record_id TEXT PRIMARY KEY,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+            semester_data TEXT,
+            final_gpa REAL,
+            final_cgpa REAL,
+            total_units_taken INTEGER,
+            total_credit_points INTEGER
+        )
+    ''')
+
+    # Populate courses table
+    courses = [
+        # Part 1 - Harmattan Semester
+        ('1', 'Harmattan', 'EDU101', 'Introduction to Teaching Profession', 2),
+        ('1', 'Harmattan', 'ETL101', 'Introduction to Information Work', 2),
+        ('1', 'Harmattan', 'ETL103', 'Introduction to Information Science', 2),
+        ('1', 'Harmattan', 'PHL101', 'Introduction to Philosophy I', 3),
+        ('1', 'Harmattan', 'SSC101', 'Man and His Social Environment', 3),
+        ('1', 'Harmattan', 'YOR101', 'Introduction to the Yoruba People and the Yoruba Language', 3),
+
+        # Part 1 - Rain Semester
+        ('1', 'Rain', 'EDU102', 'Principles and Practice of Education', 2),
+        ('1', 'Rain', 'ETL102', 'Introduction to ICT in Library and Information Services', 2),
+        ('1', 'Rain', 'ETL104', 'Information Resources and Services', 2),
+        ('1', 'Rain', 'ETL106', 'Information Literacy', 2),
+        ('1', 'Rain', 'ETL108', 'Libraries and Societies', 2),
+        ('1', 'Rain', 'ETL110', 'Introduction to Information Management', 2),
+        ('1', 'Rain', 'PHL104', 'Introduction to Philosophy II', 3),
+        ('1', 'Rain', 'SSC102', 'Elements of Economic Theory and Principles', 3),
+        ('1', 'Rain', 'YOR114', 'Introduction to Yoruba Culture', 3),
+
+        # Part 2 - Harmattan Semester
+        ('2', 'Harmattan', 'ALL201', 'Literacy Education for Adults', 2),
+        ('2', 'Harmattan', 'CSC221', 'Computer Appreciation', 2),
+        ('2', 'Harmattan', 'EFC201', 'Historical Foundations of Education', 2),
+        ('2', 'Harmattan', 'ETL201', 'Principles and Theories of Library and Information Management', 2),
+        ('2', 'Harmattan', 'ETL203', 'Organization of Knowledge I (Classification)', 2),
+        ('2', 'Harmattan', 'ETL205', 'Multimedia Application in Libraries and Information Centers', 2),
+        ('2', 'Harmattan', 'ETL207', 'Introduction to Reference and Information Services', 2),
+        ('2', 'Harmattan', 'ETL209', 'Information Retrieval 1 (Cataloguing)', 2),
+
+        # Part 2 - Rain Semester
+        ('2', 'Rain', 'ASE202', 'Curriculum and Instruction', 2),
+        ('2', 'Rain', 'ETL202', 'Introduction to Educational Technology and Communications', 2),
+        ('2', 'Rain', 'ETL204', 'Preservation and Security of Library and Information Resources', 2),
+        ('2', 'Rain', 'ETL206', 'Library and Information Services to People with Special Needs', 2),
+        ('2', 'Rain', 'ETL208', 'Learning and Communication Skills', 2),
+        ('2', 'Rain', 'ETL212', 'Literature and Library Services for Young People', 2),
+        ('2', 'Rain', 'ETL214', 'Management of Serials and Government Publications', 2),
+        ('2', 'Rain', 'ETL216', 'Introduction to Information Systems', 2)
+    ]
+
+    cursor.executemany('''
+        INSERT OR IGNORE INTO courses (part, semester, course_code, course_title, course_unit)
+        VALUES (?, ?, ?, ?, ?)
+    ''', courses)
+
+    conn.commit()
+    conn.close()
+
+if __name__ == '__main__':
+    init_db()
+    print("Database initialized successfully.")

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - GPA Calculations</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Admin Panel: Saved GPA Calculations</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Record ID</th>
+                    <th>Timestamp</th>
+                    <th>Final CGPA</th>
+                    <th>Total Units</th>
+                    <th>Total Credit Points</th>
+                    <th>Semester Data (JSON)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in records %}
+                <tr>
+                    <td>{{ record.record_id }}</td>
+                    <td>{{ record.timestamp }}</td>
+                    <td>{{ "%.2f"|format(record.final_cgpa) }}</td>
+                    <td>{{ record.total_units_taken }}</td>
+                    <td>{{ record.total_credit_points }}</td>
+                    <td>
+                        <details>
+                            <summary>View JSON</summary>
+                            <pre><code>{{ record.semester_data }}</code></pre>
+                        </details>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6">No records found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="{{ url_for('index') }}" class="back-link">Back to Calculator</a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ife BLIS GPA Calculator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div id="notification-area" class="notification" style="display:none;"></div>
+    <div class="container">
+        <h1>Ife BLIS GPA Calculator</h1>
+        <div class="selection-area">
+            <label for="part-select">Part:</label>
+            <select id="part-select">
+                <option value="">--Select Part--</option>
+                {% for part in semester_parts|map(attribute='part')|unique %}
+                    <option value="{{ part }}">{{ part }}</option>
+                {% endfor %}
+            </select>
+            <label for="semester-select">Semester:</label>
+            <select id="semester-select">
+                <option value="">--Select Semester--</option>
+                {% for semester in semester_parts|map(attribute='semester')|unique %}
+                    <option value="{{ semester }}">{{ semester }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div id="course-input-area">
+            <!-- Courses will be loaded here -->
+        </div>
+        <div class="gpa-display-area">
+            <h3>Current Semester GPA: <span id="semester-gpa-display">0.00</span></h3>
+            <h3>Cumulative GPA: <span id="cumulative-gpa-display">0.00</span></h3>
+        </div>
+        <div class="button-area">
+            <button id="add-semester-btn">Add Semester to Calculation</button>
+            <button id="reset-session-btn">Start New Calculation (Reset)</button>
+        </div>
+        <div class="finalize-area">
+            <button id="save-calculation-btn">Finalize & Save Calculation</button>
+            <p id="save-success-message" style="display:none;"></p>
+        </div>
+        <div id="session-summary">
+            <h2>Calculation Session Summary</h2>
+            <ul>
+                <!-- Session summary will be populated here -->
+            </ul>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <footer>
+        <a href="{{ url_for('admin_panel') }}">Admin Panel</a>
+    </footer>
+</body>
+</html>
