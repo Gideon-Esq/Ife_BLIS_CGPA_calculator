@@ -291,7 +291,7 @@ def load_calculation(record_id):
 @app.route('/admin/login', methods=['GET', 'POST'])
 def admin_login():
     if request.method == 'POST':
-        pin = request.form.get('pin')
+        pin = request.form.get('pin', '').strip()
         # In a real app, use a more secure way to store and check the PIN
         if pin == '162019':
             session['admin_authenticated'] = True
