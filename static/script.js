@@ -79,9 +79,13 @@ document.addEventListener('DOMContentLoaded', () => {
                         <td>${course.course_unit}</td>
                         <td>
                             <select name="grade" data-course-code="${course.course_code}">
-                                <option value="">--</option>
-                                <option value="A">A</option><option value="B">B</option><option value="C">C</option>
-                                <option value="D">D</option><option value="E">E</option><option value="F">F</option>
+                                <option value="" ${!course.grade ? 'selected' : ''}>--</option>
+                                <option value="A" ${course.grade === 'A' ? 'selected' : ''}>A</option>
+                                <option value="B" ${course.grade === 'B' ? 'selected' : ''}>B</option>
+                                <option value="C" ${course.grade === 'C' ? 'selected' : ''}>C</option>
+                                <option value="D" ${course.grade === 'D' ? 'selected' : ''}>D</option>
+                                <option value="E" ${course.grade === 'E' ? 'selected' : ''}>E</option>
+                                <option value="F" ${course.grade === 'F' ? 'selected' : ''}>F</option>
                             </select>
                         </td>
                     </tr>

@@ -56,17 +56,28 @@ def get_courses(part, semester):
     try:
         with get_db() as conn:
             cursor = conn.cursor()
-            # Get the standard courses for the selected part and semester
+            # Get the standard courses
             cursor.execute('SELECT course_code, course_title, course_unit FROM courses WHERE part = ? AND semester = ?', (part, semester))
             courses = [dict(row) for row in cursor.fetchall()]
 
-            # Get carry-over courses from the session
-            carry_overs = session.get('carry_over_courses', [])
+            # Check for saved grades in the session
+            saved_grades = {}
+            session_key = f"{part}-{semester}"
+            if 'semesters_data' in session:
+                for data in session['semesters_data']:
+                    if data.get('session_key') == session_key:
+                        for course in data.get('courses', []):
+                            saved_grades[course['course_code']] = course['grade']
 
-            # Filter for carry-overs that match the current semester
+            # Add saved grades to the course data
+            for course in courses:
+                if course['course_code'] in saved_grades:
+                    course['grade'] = saved_grades[course['course_code']]
+
+            # Handle carry-over courses
+            carry_overs = session.get('carry_over_courses', [])
             relevant_carry_overs = [co for co in carry_overs if co['semester'] == semester]
 
-            # Add carry-overs to the list if they are not already present
             course_codes = {c['course_code'] for c in courses}
             for co in relevant_carry_overs:
                 if co['course_code'] not in course_codes:
@@ -74,7 +85,8 @@ def get_courses(part, semester):
                         "course_code": co['course_code'],
                         "course_title": co['course_title'],
                         "course_unit": co['course_unit'],
-                        "is_carry_over": True # Flag for the frontend
+                        "is_carry_over": True,
+                        "grade": saved_grades.get(co['course_code']) # Also check grade for carry-over
                     }
                     courses.append(course_data)
                     course_codes.add(co['course_code'])
