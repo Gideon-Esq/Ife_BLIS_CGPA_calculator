@@ -187,6 +187,28 @@ document.addEventListener('DOMContentLoaded', () => {
     resetSessionBtn.addEventListener('click', resetSession);
     saveCalculationBtn.addEventListener('click', saveCalculation);
 
-    // Initial button states
-    updateButtonStates();
+    // Initial button states and data load
+    function initializePage() {
+        // This data is now passed from the backend template
+        const initialCGPA = parseFloat(cumulativeGpaDisplay.dataset.initialCgpa || 0);
+        const initialSummary = JSON.parse(sessionSummaryList.dataset.initialSummary || '[]');
+
+        cumulativeGpaDisplay.textContent = initialCGPA.toFixed(2);
+
+        if (initialSummary.length > 0) {
+            sessionSummaryList.innerHTML = initialSummary.map(item =>
+                `<li>Part ${item.part} ${item.semester} - GPA: ${item.gpa.toFixed(2)}</li>`
+            ).join('');
+        }
+
+        updateButtonStates();
+    }
+
+    partSelect.addEventListener('change', fetchCourses);
+    semesterSelect.addEventListener('change', fetchCourses);
+    addSemesterBtn.addEventListener('click', addSemesterToCalculation);
+    resetSessionBtn.addEventListener('click', resetSession);
+    saveCalculationBtn.addEventListener('click', saveCalculation);
+
+    initializePage();
 });

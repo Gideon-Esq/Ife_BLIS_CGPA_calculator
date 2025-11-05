@@ -31,7 +31,7 @@
             <tbody>
                 {% for record in records %}
                 <tr>
-                    <td>{{ record.record_id }}</td>
+                    <td><a href="{{ url_for('load_calculation', record_id=record.record_id) }}" title="Load this calculation">{{ record.record_id[:8] }}...</a></td>
                     <td>{{ record.timestamp }}</td>
                     <td>{{ "%.2f"|format(record.final_cgpa) }}</td>
                     <td>{{ record.total_units_taken }}</td>

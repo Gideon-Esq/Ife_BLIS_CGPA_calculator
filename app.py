@@ -1,5 +1,5 @@
 import sqlite3
-from flask import Flask, g, jsonify, render_template, request, session
+from flask import Flask, g, jsonify, render_template, request, session, redirect, url_for, flash
 from contextlib import contextmanager
 import os
 import uuid
@@ -21,7 +21,15 @@ def get_db():
 
 @app.route('/')
 def index():
-    if 'semesters_data' not in session:
+    initial_cgpa = 0
+    initial_summary = []
+
+    if 'semesters_data' in session and session['semesters_data']:
+        grades_for_calc = {s['session_key']: s['courses'] for s in session['semesters_data']}
+        results = calculate_gpa_cgpa(grades_for_calc)
+        initial_cgpa = results['cumulative_gpa']
+        initial_summary = [{"part": s['part'], "semester": s['semester'], "gpa": results['semester_gpas'].get(s['session_key'], 0)} for s in session['semesters_data']]
+    else:
         session['semesters_data'] = []
 
     try:
@@ -30,11 +38,15 @@ def index():
             cursor.execute('SELECT DISTINCT part, semester FROM courses ORDER BY part, semester')
             semester_parts = cursor.fetchall()
     except sqlite3.Error as e:
-        # Log the error and render a simple error page or message
         print(f"Database error: {e}")
         return "Error connecting to the database.", 500
 
-    return render_template('index.html', semester_parts=semester_parts, session_data=session['semesters_data'])
+    return render_template(
+        'index.html',
+        semester_parts=semester_parts,
+        initial_cgpa=initial_cgpa,
+        initial_summary=initial_summary
+    )
 
 @app.route('/api/courses/<part>/<semester>')
 def get_courses(part, semester):
@@ -226,6 +238,38 @@ def get_admin_records():
     except sqlite3.Error as e:
         print(f"Database error: {e}")
         return jsonify({"error": "Failed to fetch records from the database."}), 500
+
+@app.route('/load_calculation/<record_id>')
+def load_calculation(record_id):
+    try:
+        with get_db() as conn:
+            cursor = conn.cursor()
+            cursor.execute('SELECT semester_data FROM gpa_records WHERE record_id = ?', (record_id,))
+            record = cursor.fetchone()
+
+            if record and record['semester_data']:
+                session.clear()
+                session['semesters_data'] = json.loads(record['semester_data'])
+                # Regenerate carry-overs from the loaded data
+                session['carry_over_courses'] = []
+                for semester_data in session['semesters_data']:
+                    for course in semester_data.get('courses', []):
+                        if course.get('grade') == 'F':
+                            # Fetch full course details to store in carry_over
+                            cursor.execute('SELECT * FROM courses WHERE course_code = ?', (course['course_code'],))
+                            course_db = cursor.fetchone()
+                            if course_db and not any(c['course_code'] == course_db['course_code'] for c in session['carry_over_courses']):
+                                session['carry_over_courses'].append(dict(course_db))
+
+                session.modified = True
+                flash(f"Calculation {record_id[:8]}... loaded successfully.", "success")
+            else:
+                flash("Calculation not found.", "error")
+    except (sqlite3.Error, json.JSONDecodeError) as e:
+        print(f"Error loading calculation: {e}")
+        flash("Failed to load calculation due to an error.", "error")
+
+    return redirect(url_for('index'))
 
 if __name__ == '__main__':
     app.run(debug=True)

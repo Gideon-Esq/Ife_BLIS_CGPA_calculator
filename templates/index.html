@@ -15,6 +15,13 @@
 <body>
     <div id="notification-area" class="notification" style="display:none;"></div>
     <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="notification {{ category }} show" style="position: relative; top: -1rem; margin-bottom: 1rem;">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
         <h1><i class="material-icons">calculate</i> Ife BLIS GPA Calculator</h1>
         <div class="selection-area">
             <div>
@@ -46,7 +53,7 @@
             </div>
             <div>
                 <h3>Cumulative GPA</h3>
-                <span id="cumulative-gpa-display">0.00</span>
+                <span id="cumulative-gpa-display" data-initial-cgpa="{{ initial_cgpa|default(0) }}">{{ "%.2f"|format(initial_cgpa|default(0)) }}</span>
             </div>
         </div>
         <div class="button-area">
@@ -59,8 +66,8 @@
         </div>
         <div id="session-summary">
             <h2>Calculation Session Summary</h2>
-            <ul>
-                <!-- Session summary will be populated here -->
+            <ul data-initial-summary='{{ initial_summary|tojson|safe }}'>
+                <!-- Session summary will be populated here by script -->
             </ul>
         </div>
     </div>
