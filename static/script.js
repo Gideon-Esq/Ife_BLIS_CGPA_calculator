@@ -22,7 +22,11 @@ document.addEventListener('DOMContentLoaded', () => {
         addSemesterBtn.disabled = isLoading;
         resetSessionBtn.disabled = isLoading;
         saveCalculationBtn.disabled = isLoading;
-        addSemesterBtn.textContent = isLoading ? 'Adding...' : 'Add Semester to Calculation';
+        if (isLoading) {
+            addSemesterBtn.innerHTML = '<i class="material-icons">hourglass_top</i> Adding...';
+        } else {
+            addSemesterBtn.innerHTML = '<i class="material-icons">add_circle_outline</i> Add Semester';
+        }
     };
 
     const updateButtonStates = () => {
@@ -60,7 +64,6 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         const table = document.createElement('table');
-        table.innerHTML = `...`; // Content set below
         table.innerHTML = `
             <thead>
                 <tr><th>Course Code</th><th>Course Title</th><th>Course Unit</th><th>Grade</th></tr>
@@ -69,7 +72,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 ${courses.map(course => `
                     <tr>
                         <td>${course.course_code}</td>
-                        <td>${course.course_title}</td>
+                        <td>
+                            ${course.course_title}
+                            ${course.is_carry_over ? '<span class="carry-over-tag">(Carry-over)</span>' : ''}
+                        </td>
                         <td>${course.course_unit}</td>
                         <td>
                             <select name="grade" data-course-code="${course.course_code}">

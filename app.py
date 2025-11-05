@@ -44,9 +44,30 @@ def get_courses(part, semester):
     try:
         with get_db() as conn:
             cursor = conn.cursor()
+            # Get the standard courses for the selected part and semester
             cursor.execute('SELECT course_code, course_title, course_unit FROM courses WHERE part = ? AND semester = ?', (part, semester))
-            courses = cursor.fetchall()
-            return jsonify([dict(row) for row in courses])
+            courses = [dict(row) for row in cursor.fetchall()]
+
+            # Get carry-over courses from the session
+            carry_overs = session.get('carry_over_courses', [])
+
+            # Filter for carry-overs that match the current semester
+            relevant_carry_overs = [co for co in carry_overs if co['semester'] == semester]
+
+            # Add carry-overs to the list if they are not already present
+            course_codes = {c['course_code'] for c in courses}
+            for co in relevant_carry_overs:
+                if co['course_code'] not in course_codes:
+                    course_data = {
+                        "course_code": co['course_code'],
+                        "course_title": co['course_title'],
+                        "course_unit": co['course_unit'],
+                        "is_carry_over": True # Flag for the frontend
+                    }
+                    courses.append(course_data)
+                    course_codes.add(co['course_code'])
+
+            return jsonify(courses)
     except sqlite3.Error as e:
         print(f"Database error: {e}")
         return jsonify({"error": "Database query failed"}), 500
@@ -106,17 +127,32 @@ def add_semester():
         with get_db() as conn:
             cursor = conn.cursor()
             new_semester_courses = []
+
+            if 'carry_over_courses' not in session:
+                session['carry_over_courses'] = []
+
             for grade_info in grades:
-                cursor.execute('SELECT course_unit FROM courses WHERE course_code = ?', (grade_info['course_code'],))
+                cursor.execute('SELECT * FROM courses WHERE course_code = ?', (grade_info['course_code'],))
                 course_db = cursor.fetchone()
                 if course_db:
                     new_semester_courses.append({**grade_info, 'course_unit': course_db['course_unit']})
+
+                    if grade_info.get('grade') == 'F':
+                        is_already_carry_over = any(c['course_code'] == grade_info['course_code'] for c in session['carry_over_courses'])
+                        if not is_already_carry_over:
+                            session['carry_over_courses'].append(dict(course_db))
                 else:
                     return jsonify({"error": f"Course code not found: {grade_info['course_code']}"}), 400
 
         session_key = f"{part}-{semester_name}"
         session['semesters_data'] = [s for s in session.get('semesters_data', []) if s.get('session_key') != session_key]
         session['semesters_data'].append({"session_key": session_key, "part": part, "semester": semester_name, "courses": new_semester_courses})
+
+        # Also remove a course from carry-over if the user passes it
+        passed_carry_overs = [g['course_code'] for g in grades if g.get('grade') != 'F' and any(c['course_code'] == g['course_code'] for c in session.get('carry_over_courses', []))]
+        if passed_carry_overs:
+            session['carry_over_courses'] = [c for c in session['carry_over_courses'] if c['course_code'] not in passed_carry_overs]
+
         session.modified = True
 
         grades_for_calc = {s['session_key']: s['courses'] for s in session['semesters_data']}

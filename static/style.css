@@ -134,6 +134,16 @@ td select {
     padding: 0.5rem;
 }
 
+.carry-over-tag {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--error-color);
+    margin-left: 0.5rem;
+    background-color: #fce8e6;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+}
+
 /* --- Buttons --- */
 .button-area, .finalize-area {
     margin-top: 2rem;
