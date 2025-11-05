@@ -4,41 +4,57 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ife BLIS GPA Calculator</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&family=Poppins:wght@300;400;600&family=Raleway:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <div id="notification-area" class="notification" style="display:none;"></div>
     <div class="container">
-        <h1>Ife BLIS GPA Calculator</h1>
+        <h1><i class="material-icons">calculate</i> Ife BLIS GPA Calculator</h1>
         <div class="selection-area">
-            <label for="part-select">Part:</label>
-            <select id="part-select">
-                <option value="">--Select Part--</option>
+            <div>
+                <label for="part-select">Part:</label>
+                <select id="part-select">
+                    <option value="">--Select Part--</option>
                 {% for part in semester_parts|map(attribute='part')|unique %}
                     <option value="{{ part }}">{{ part }}</option>
                 {% endfor %}
-            </select>
-            <label for="semester-select">Semester:</label>
-            <select id="semester-select">
-                <option value="">--Select Semester--</option>
-                {% for semester in semester_parts|map(attribute='semester')|unique %}
-                    <option value="{{ semester }}">{{ semester }}</option>
-                {% endfor %}
-            </select>
+                </select>
+            </div>
+            <div>
+                <label for="semester-select">Semester:</label>
+                <select id="semester-select">
+                    <option value="">--Select Semester--</option>
+                    {% for semester in semester_parts|map(attribute='semester')|unique %}
+                        <option value="{{ semester }}">{{ semester }}</option>
+                    {% endfor %}
+                </select>
+            </div>
         </div>
         <div id="course-input-area">
             <!-- Courses will be loaded here -->
         </div>
         <div class="gpa-display-area">
-            <h3>Current Semester GPA: <span id="semester-gpa-display">0.00</span></h3>
-            <h3>Cumulative GPA: <span id="cumulative-gpa-display">0.00</span></h3>
+            <div>
+                <h3>Current Semester GPA</h3>
+                <span id="semester-gpa-display">0.00</span>
+            </div>
+            <div>
+                <h3>Cumulative GPA</h3>
+                <span id="cumulative-gpa-display">0.00</span>
+            </div>
         </div>
         <div class="button-area">
-            <button id="add-semester-btn">Add Semester to Calculation</button>
-            <button id="reset-session-btn">Start New Calculation (Reset)</button>
+            <button id="add-semester-btn"><i class="material-icons">add_circle_outline</i> Add Semester</button>
+            <button id="reset-session-btn"><i class="material-icons">refresh</i> Reset All</button>
         </div>
         <div class="finalize-area">
-            <button id="save-calculation-btn">Finalize & Save Calculation</button>
+            <button id="save-calculation-btn"><i class="material-icons">save</i> Finalize & Save</button>
             <p id="save-success-message" style="display:none;"></p>
         </div>
         <div id="session-summary">
