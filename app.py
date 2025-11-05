@@ -6,6 +6,8 @@ import uuid
 import json
 
 app = Flask(__name__)
+import os
+
 # Set a secret key for session management. In a real app, use a more secure key.
 app.config['SECRET_KEY'] = os.urandom(24)
 DATABASE = 'database.db'
@@ -227,6 +229,9 @@ def save_calculation():
 
 @app.route('/admin')
 def admin_panel():
+    if not session.get('admin_authenticated'):
+        return redirect(url_for('admin_login'))
+
     try:
         with get_db() as conn:
             cursor = conn.cursor()
@@ -282,6 +287,25 @@ def load_calculation(record_id):
         flash("Failed to load calculation due to an error.", "error")
 
     return redirect(url_for('index'))
+
+@app.route('/admin/login', methods=['GET', 'POST'])
+def admin_login():
+    if request.method == 'POST':
+        pin = request.form.get('pin')
+        # In a real app, use a more secure way to store and check the PIN
+        if pin == '162019':
+            session['admin_authenticated'] = True
+            return redirect(url_for('admin_panel'))
+        else:
+            flash("Invalid PIN.", "error")
+            return redirect(url_for('admin_login'))
+    return render_template('admin_login.html')
+
+@app.route('/admin/logout')
+def admin_logout():
+    session.pop('admin_authenticated', None)
+    flash("You have been logged out.", "success")
+    return redirect(url_for('admin_login'))
 
 if __name__ == '__main__':
     app.run(debug=True)

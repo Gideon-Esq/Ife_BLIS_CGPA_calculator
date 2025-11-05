@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&family=Poppins:wght@300;400;600&family=Raleway:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .login-container {
+            max-width: 400px;
+            margin: 4rem auto;
+            text-align: center;
+        }
+        .login-container input {
+            width: 100%;
+            padding: 0.8rem;
+            margin-top: 1rem;
+            font-size: 1.2rem;
+            text-align: center;
+            letter-spacing: 0.5em;
+        }
+        .login-container button {
+            margin-top: 1.5rem;
+            width: 100%;
+        }
+        .flash-message {
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border-radius: 8px; /* Use --border-radius if available */
+            border: 1px solid transparent;
+            text-align: center;
+            font-weight: 500;
+        }
+        .flash-message.error {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container login-container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <h1><i class="material-icons">lock</i> Admin Access</h1>
+        <form action="{{ url_for('admin_login') }}" method="post">
+            <label for="pin">Enter 6-Digit PIN</label>
+            <input type="password" id="pin" name="pin" maxlength="6" pattern="\\d{6}" required>
+            <button type="submit">Login</button>
+        </form>
+    </div>
+</body>
+</html>

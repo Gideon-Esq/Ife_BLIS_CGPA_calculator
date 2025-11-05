@@ -80,7 +80,6 @@ def init_db():
         ('3', 'Harmattan', 'ETL311', 'Entrepreneurship in Library and Information Service', 2),
         ('3', 'Harmattan', 'ETL313', 'Indexing and Abstracting', 2),
         ('3', 'Harmattan', 'ETL315', 'Archives and Records Management', 2),
-        ('3', 'Harmattan', 'STE301', 'Curriculum Development', 2),
 
         # Part 3 - Rain Semester
         ('3', 'Rain', 'ETL300', 'SIWES (Students’ Industrial Work Experiences)', 6),
