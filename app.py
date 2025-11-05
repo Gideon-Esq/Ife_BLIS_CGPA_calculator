@@ -214,5 +214,18 @@ def admin_panel():
 
     return render_template('admin.html', records=records)
 
+@app.route('/api/admin/records', methods=['GET'])
+def get_admin_records():
+    try:
+        with get_db() as conn:
+            cursor = conn.cursor()
+            cursor.execute('SELECT * FROM gpa_records ORDER BY timestamp DESC')
+            records = cursor.fetchall()
+            # The `semester_data` may need special handling if it's stored as a JSON string
+            return jsonify([dict(row) for row in records])
+    except sqlite3.Error as e:
+        print(f"Database error: {e}")
+        return jsonify({"error": "Failed to fetch records from the database."}), 500
+
 if __name__ == '__main__':
     app.run(debug=True)

@@ -22,9 +22,9 @@ body {
     font-family: var(--font-body);
     background-color: var(--background-color);
     color: var(--text-color);
-    line-height: 1.7;
+    line-height: 1.6;
     margin: 0;
-    padding: 2rem;
+    padding: 1rem; /* Padding for mobile */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
@@ -38,7 +38,7 @@ h1, h2, h3 {
 }
 
 h1 {
-    font-size: 2.5rem;
+    font-size: 2rem; /* Adjusted for mobile */
     margin-bottom: 0.5rem;
     display: flex;
     align-items: center;
@@ -47,23 +47,24 @@ h1 {
 }
 
 h2 {
-    font-size: 1.8rem;
+    font-size: 1.5rem; /* Adjusted for mobile */
     border-bottom: 2px solid var(--border-color);
     padding-bottom: 0.5rem;
-    margin-top: 2.5rem;
+    margin-top: 2rem;
 }
 
 h3 {
-    font-size: 1.4rem;
+    font-size: 1.2rem; /* Adjusted for mobile */
     color: var(--secondary-color);
     font-weight: 400;
 }
 
 /* --- Layout & Container --- */
 .container {
+    width: 100%;
     max-width: 900px;
     margin: 0 auto;
-    padding: 2.5rem;
+    padding: 1.5rem; /* Padding for mobile */
     background-color: var(--surface-color);
     border-radius: var(--border-radius);
     box-shadow: var(--shadow);
@@ -72,10 +73,9 @@ h3 {
 /* --- Form Elements --- */
 .selection-area {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
-    margin: 2rem 0;
-    align-items: center;
+    grid-template-columns: 1fr; /* Single column for mobile */
+    gap: 1rem;
+    margin: 1.5rem 0;
 }
 
 label {
@@ -102,17 +102,24 @@ select:focus {
     box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.15);
 }
 
-/* --- Tables --- */
-table {
-    width: 100%;
-    border-collapse: collapse;
+/* --- Responsive Tables --- */
+#course-input-area, .table-wrapper {
+    overflow-x: auto; /* Make table scrollable on mobile */
+    -webkit-overflow-scrolling: touch;
     margin-top: 1.5rem;
 }
 
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 600px; /* Force horizontal scroll if needed */
+}
+
 th, td {
-    padding: 1rem;
+    padding: 0.75rem;
     text-align: left;
     border-bottom: 1px solid var(--border-color);
+    white-space: nowrap; /* Prevent text wrapping in cells */
 }
 
 thead th {
@@ -146,9 +153,10 @@ td select {
 
 /* --- Buttons --- */
 .button-area, .finalize-area {
-    margin-top: 2rem;
+    margin-top: 1.5rem;
     display: flex;
-    gap: 1rem;
+    flex-direction: column; /* Stack buttons on mobile */
+    gap: 0.75rem;
 }
 
 button {
@@ -156,7 +164,7 @@ button {
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    width: auto;
+    width: 100%; /* Full width for mobile */
     flex-grow: 1;
     padding: 0.8rem 1.5rem;
     background-color: var(--primary-color);
@@ -197,25 +205,26 @@ button:disabled {
 
 /* --- GPA Display --- */
 .gpa-display-area {
-    margin-top: 2.5rem;
+    margin-top: 2rem;
     background-color: var(--background-color);
     padding: 1.5rem;
     border-radius: var(--border-radius);
     text-align: center;
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr; /* Single column for mobile */
     gap: 1rem;
 }
 
 .gpa-display-area h3 {
     margin: 0;
     color: var(--text-color);
+    font-size: 1.1rem;
 }
 
 .gpa-display-area span {
     font-weight: 700;
     font-family: var(--font-heading);
-    font-size: 2.2rem;
+    font-size: 2rem;
     color: var(--primary-color);
     display: block;
 }
@@ -263,8 +272,10 @@ details summary {
 #notification-area {
     position: fixed;
     bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
+    left: 20px;
+    right: 20px;
+    transform: none;
+    width: auto;
     padding: 1rem 1.5rem;
     border-radius: var(--border-radius);
     color: #fff;
@@ -279,7 +290,6 @@ details summary {
 #notification-area.show {
     opacity: 1;
     visibility: visible;
-    transform: translateX(-50%) translateY(0);
 }
 
 #notification-area.success {
@@ -288,4 +298,49 @@ details summary {
 
 #notification-area.error {
     background-color: var(--error-color);
+}
+
+/* --- Desktop and Tablet Styles --- */
+@media (min-width: 768px) {
+    body {
+        padding: 2rem;
+    }
+
+    .container {
+        padding: 2.5rem;
+    }
+
+    h1 {
+        font-size: 2.5rem;
+    }
+
+    h2 {
+        font-size: 1.8rem;
+    }
+
+    .selection-area {
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+    }
+
+    .button-area, .finalize-area {
+        flex-direction: row; /* Horizontal buttons on larger screens */
+        gap: 1rem;
+    }
+
+    button {
+        width: auto;
+    }
+
+    .gpa-display-area {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    #notification-area {
+        left: 50%;
+        right: auto;
+        transform: translateX(-50%);
+        width: auto;
+        min-width: 300px;
+    }
 }
