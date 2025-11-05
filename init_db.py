@@ -68,7 +68,27 @@ def init_db():
         ('2', 'Rain', 'ETL208', 'Learning and Communication Skills', 2),
         ('2', 'Rain', 'ETL212', 'Literature and Library Services for Young People', 2),
         ('2', 'Rain', 'ETL214', 'Management of Serials and Government Publications', 2),
-        ('2', 'Rain', 'ETL216', 'Introduction to Information Systems', 2)
+        ('2', 'Rain', 'ETL216', 'Introduction to Information Systems', 2),
+
+        # Part 3 - Harmattan Semester
+        ('3', 'Harmattan', 'EFC303', 'Tests and Measurement', 2),
+        ('3', 'Harmattan', 'ETL301', 'Organization and Management of Learning Resources', 2),
+        ('3', 'Harmattan', 'ETL303', 'Organization of Knowledge II (Classification)', 2),
+        ('3', 'Harmattan', 'ETL305', 'Information Retrieval II (Cataloguing)', 2),
+        ('3', 'Harmattan', 'ETL307', 'Internet and Information Searching II', 2),
+        ('3', 'Harmattan', 'ETL309', 'System Analysis and Design', 2),
+        ('3', 'Harmattan', 'ETL311', 'Entrepreneurship in Library and Information Service', 2),
+        ('3', 'Harmattan', 'ETL313', 'Indexing and Abstracting', 2),
+        ('3', 'Harmattan', 'ETL315', 'Archives and Records Management', 2),
+
+        # Part 3 - Rain Semester
+        ('3', 'Rain', 'ETL300', 'SIWES (Students’ Industrial Work Experiences)', 6),
+        ('3', 'Rain', 'ETL304', 'Indigenous Knowledge', 2),
+        ('3', 'Rain', 'ETL306', 'Database Design and Management', 2),
+        ('3', 'Rain', 'ETL314', 'Project Management and Evaluation', 2),
+        ('3', 'Rain', 'ETL316', 'Research Methodology in Library, Archives and Information Science', 2),
+        ('3', 'Rain', 'ETL330', 'Resources Sharing and Networking', 2),
+        ('3', 'Rain', 'ETL332', 'Information Resources in Subject Area', 2)
     ]
 
     cursor.executemany('''
