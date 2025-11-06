@@ -173,23 +173,20 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch('/api/save_calculation', { method: 'POST' });
             if (!response.ok) {
                 const err = await response.json();
-                throw new Error(err.error || 'Failed to save calculation');
+                throw new Error(err.error || 'Failed to finalize results');
             }
             const result = await response.json();
-            showNotification(`Calculation saved with ID: ${result.record_id}`, 'success');
-            await resetSession();
+            if (result.success && result.redirect_url) {
+                window.location.href = result.redirect_url;
+            } else {
+                throw new Error('Failed to get results page URL.');
+            }
         } catch (error) {
             showNotification(error.message, 'error');
         } finally {
             setLoadingState(false);
         }
     }
-
-    partSelect.addEventListener('change', fetchCourses);
-    semesterSelect.addEventListener('change', fetchCourses);
-    addSemesterBtn.addEventListener('click', addSemesterToCalculation);
-    resetSessionBtn.addEventListener('click', resetSession);
-    saveCalculationBtn.addEventListener('click', saveCalculation);
 
     // Initial button states and data load
     function initializePage() {

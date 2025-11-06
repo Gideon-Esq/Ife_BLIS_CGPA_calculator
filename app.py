@@ -220,14 +220,25 @@ def save_calculation():
             ''', (record_id, json.dumps(semesters_data), results['cumulative_gpa'], results['cumulative_gpa'], results['total_units_taken'], results['total_credit_points']))
             conn.commit()
 
-        session.clear()
-        return jsonify({"message": "Calculation saved successfully", "record_id": record_id})
+        # Format the results for the results page
+        display_data = {
+            "cumulative_gpa": results['cumulative_gpa'],
+            "semester_gpas": [{"part": s['part'], "semester": s['semester'], "gpa": results['semester_gpas'].get(s['session_key'], 0)} for s in semesters_data]
+        }
+        session['last_calculation_results'] = display_data
+
+        # Clear the calculation data but keep the results for the next page
+        session.pop('semesters_data', None)
+        session.pop('carry_over_courses', None)
+        session.modified = True
+
+        return jsonify({"success": True, "redirect_url": url_for('results_page')})
 
     except sqlite3.Error as e:
         print(f"Database error: {e}")
         return jsonify({"error": "Failed to save calculation to the database."}), 500
 
-@app.route('/admin')
+@app.route('/blis-records-management')
 def admin_panel():
     if not session.get('admin_authenticated'):
         return redirect(url_for('admin_login'))
@@ -243,7 +254,7 @@ def admin_panel():
 
     return render_template('admin.html', records=records)
 
-@app.route('/api/admin/records', methods=['GET'])
+@app.route('/api/blis-records-management/records', methods=['GET'])
 def get_admin_records():
     try:
         with get_db() as conn:
@@ -288,7 +299,19 @@ def load_calculation(record_id):
 
     return redirect(url_for('index'))
 
-@app.route('/admin/login', methods=['GET', 'POST'])
+@app.route('/results')
+def results_page():
+    if 'last_calculation_results' not in session:
+        flash("No results to display. Please calculate your GPA first.", "error")
+        return redirect(url_for('index'))
+
+    results = session.get('last_calculation_results')
+    # Clear the results from the session so they aren't shown again on refresh
+    session.pop('last_calculation_results', None)
+
+    return render_template('results.html', results=results)
+
+@app.route('/blis-records-management/login', methods=['GET', 'POST'])
 def admin_login():
     if request.method == 'POST':
         pin = request.form.get('pin', '').strip()
@@ -301,7 +324,7 @@ def admin_login():
             return redirect(url_for('admin_login'))
     return render_template('admin_login.html')
 
-@app.route('/admin/logout')
+@app.route('/blis-records-management/logout')
 def admin_logout():
     session.pop('admin_authenticated', None)
     flash("You have been logged out.", "success")

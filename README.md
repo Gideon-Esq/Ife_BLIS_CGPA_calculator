@@ -100,9 +100,7 @@ You will see output indicating that the server is running, usually on `http://12
 
 ## Admin Panel
 
-To view all the saved calculations, navigate to:
-
-`http://127.0.0.1:5000/admin`
+The admin panel is accessible via a private, non-disclosed URL for security purposes.
 
 ---
 
@@ -119,5 +117,6 @@ To view all the saved calculations, navigate to:
 ├── templates/
 │   ├── index.html      # Main calculator page template
 │   └── admin.html      # Admin panel template
+│   └── admin_login.html # Admin login page template
 └── README.md           # This file
 ```
