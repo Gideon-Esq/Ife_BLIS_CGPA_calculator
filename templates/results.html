@@ -82,7 +82,7 @@
         <div class="results-summary">
             <h1><i class="material-icons">school</i> Your Final Results</h1>
             <h3>Cumulative Grade Point Average (CGPA)</h3>
-            <div class="final-cgpa">{{ "%.2f".format(results.cumulative_gpa) }}</div>
+            <div class="final-cgpa">{{ "%.2f"|format(results.cumulative_gpa) }}</div>
             <div class="semester-breakdown">
                 <h2>Semester Breakdown</h2>
                 {% for gpa_info in results.semester_gpas %}
