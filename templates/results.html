@@ -88,7 +88,7 @@
                 {% for gpa_info in results.semester_gpas %}
                     <div class="semester-result">
                         <span>Part {{ gpa_info.part }} - {{ gpa_info.semester }}</span>
-                        <span>GPA: <strong>{{ "%.2f".format(gpa_info.gpa) }}</strong></span>
+                        <span>GPA: <strong>{{ "%.2f"|format(gpa_info.gpa) }}</strong></span>
                     </div>
                 {% endfor %}
             </div>
