@@ -18,74 +18,45 @@ A simple, user-friendly web application for Obafemi Awolowo University (OAU) BLI
 
 ---
 
-## Termux Setup and Usage Guide
+## Deployment Guide (Render)
 
-This guide will walk you through setting up and running the application on your Android device using Termux.
+This guide will walk you through deploying the application to **Render**, a cloud hosting service with a generous free tier that supports SQLite with a persistent disk.
 
-### 1. Prerequisites
+### 1. Fork the Repository
 
--   Install the [Termux](https://f-droid.org/en/packages/com.termux/) app on your Android device from F-Droid.
+-   First, **fork this repository** to your own GitHub account.
 
-### 2. Installation
+### 2. Create a New Web Service on Render
 
-Open Termux and run the following commands one by one:
+1.  Go to your [Render Dashboard](https://dashboard.render.com/) and click **"New + > Web Service"**.
+2.  **Connect your GitHub account** and select the forked repository.
+3.  Fill in the service details:
+    *   **Name:** Give your application a unique name (e.g., `ife-blis-gpa-calculator`).
+    *   **Region:** Choose a region close to you.
+    *   **Branch:** Select your main branch (e.g., `main` or `master`).
+    *   **Root Directory:** Leave this blank.
+    *   **Runtime:** Select **Python 3**.
+    *   **Build Command:** `pip install -r requirements.txt && python init_db.py`
+    *   **Start Command:** `gunicorn app:app`
 
-```bash
-# Update package lists
-pkg update && pkg upgrade
+### 3. Add a Persistent Disk (Crucial for SQLite)
 
-# Install Python
-pkg install python
+1.  Before creating the service, click on the **"Advanced Settings"** button.
+2.  Scroll down and click **"+ Add Disk"**.
+3.  Fill in the disk details:
+    *   **Name:** `database`
+    *   **Mount Path:** `/app/database`
+    *   **Size (GB):** `1` (the smallest size is sufficient)
+4.  Click **"Save"**.
 
-# Install pip (if not already installed)
-pkg install python-pip
+### 4. Create the Web Service
 
-# Install Git to clone the repository
-pkg install git
-```
+-   Scroll down and click the **"Create Web Service"** button.
+-   Render will now build and deploy your application. The first build may take a few minutes as it installs dependencies and initializes the database.
 
-### 3. Clone the Repository
+### 5. Access Your Deployed Application
 
-Clone this repository into your Termux home directory:
-
-```bash
-git clone <repository_url>  # Replace <repository_url> with the actual URL
-cd Ife-BLIS-GPA-Calculator  # Navigate into the project directory
-```
-
-### 4. Install Dependencies
-
-Install the only required Python package, Flask:
-
-```bash
-pip install Flask
-```
-
-### 5. Initialize the Database
-
-Before running the application for the first time, you need to create and populate the database with the required course data:
-
-```bash
-python init_db.py
-```
-
-This will create a `database.db` file in the project directory.
-
-### 6. Run the Application
-
-Now you can start the Flask web server:
-
-```bash
-python app.py
-```
-
-You will see output indicating that the server is running, usually on `http://127.0.0.1:5000/`.
-
-### 7. Access the Application
-
--   Open a web browser on your Android device (e.g., Chrome, Firefox).
--   Navigate to `http://127.0.0.1:5000` or `http://localhost:5000`.
--   You should now see the GPA Calculator interface.
+-   Once the deployment is complete, Render will provide you with a public URL (e.g., `https-your-app-name.onrender.com`). You can access your GPA calculator at this URL.
 
 ---
 
