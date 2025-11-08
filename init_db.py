@@ -1,15 +1,7 @@
 import sqlite3
-import os
-
-# Define the directory and path for the database, ensuring it's in a 'database' subdirectory
-DATA_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), 'database'))
-DATABASE_PATH = os.path.join(DATA_DIR, 'database.db')
 
 def init_db():
-    # Ensure the directory for the database exists
-    os.makedirs(DATA_DIR, exist_ok=True)
-
-    conn = sqlite3.connect(DATABASE_PATH)
+    conn = sqlite3.connect('database.db')
     cursor = conn.cursor()
 
     # Create courses table

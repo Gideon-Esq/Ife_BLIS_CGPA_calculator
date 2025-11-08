@@ -11,16 +11,11 @@ import os
 # Set a secret key for session management. In a real app, use a more secure key.
 app.config['SECRET_KEY'] = os.urandom(24)
 
-# Use an absolute path for the database to ensure it's in the persistent disk area
-DATA_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), 'database'))
-DATABASE_PATH = os.path.join(DATA_DIR, 'database.db')
-
-# Ensure the directory for the database exists
-os.makedirs(DATA_DIR, exist_ok=True)
+DATABASE = 'database.db'
 
 @contextmanager
 def get_db():
-    db = sqlite3.connect(DATABASE_PATH)
+    db = sqlite3.connect(DATABASE)
     db.row_factory = sqlite3.Row
     try:
         yield db

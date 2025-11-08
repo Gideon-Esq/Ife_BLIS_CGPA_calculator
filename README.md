@@ -18,45 +18,50 @@ A simple, user-friendly web application for Obafemi Awolowo University (OAU) BLI
 
 ---
 
-## Deployment Guide (Render)
+## Deployment Guide (Railway)
 
-This guide will walk you through deploying the application to **Render**, a cloud hosting service with a generous free tier that supports SQLite with a persistent disk.
+This guide will walk you through deploying the application to **Railway**, a modern cloud hosting platform with a free tier that supports persistent storage for our SQLite database.
 
 ### 1. Fork the Repository
 
 -   First, **fork this repository** to your own GitHub account.
 
-### 2. Create a New Web Service on Render
+### 2. Create a New Project on Railway
 
-1.  Go to your [Render Dashboard](https://dashboard.render.com/) and click **"New + > Web Service"**.
-2.  **Connect your GitHub account** and select the forked repository.
-3.  Fill in the service details:
-    *   **Name:** Give your application a unique name (e.g., `ife-blis-gpa-calculator`).
-    *   **Region:** Choose a region close to you.
-    *   **Branch:** Select your main branch (e.g., `main` or `master`).
-    *   **Root Directory:** Leave this blank.
-    *   **Runtime:** Select **Python 3**.
-    *   **Build Command:** `pip install -r requirements.txt && python init_db.py`
-    *   **Start Command:** `gunicorn app:app`
+1.  Go to your [Railway Dashboard](https://railway.app/dashboard) and click **"New Project"**.
+2.  Select **"Deploy from GitHub repo"**.
+3.  **Connect your GitHub account** and select the forked repository. Railway will automatically detect the project and start the initial deployment.
 
-### 3. Add a Persistent Disk (Crucial for SQLite)
+### 3. Add a Persistent Volume (Crucial for SQLite)
 
-1.  Before creating the service, click on the **"Advanced Settings"** button.
-2.  Scroll down and click **"+ Add Disk"**.
-3.  Fill in the disk details:
-    *   **Name:** `database`
-    *   **Mount Path:** `/app/database`
-    *   **Size (GB):** `1` (the smallest size is sufficient)
-4.  Click **"Save"**.
+The initial deployment might fail or run into errors because the database needs a permanent place to live. We will now add a persistent volume.
 
-### 4. Create the Web Service
+1.  Once the project is created in Railway, click on the **service** that was just created (it will have the name of your repository).
+2.  Go to the **"Volumes"** tab.
+3.  Click **"+ New Volume"**.
+4.  Fill in the volume details:
+    *   **Mount Path:** `/app`
+    *   **Size (MB):** `512` (the smallest size is plenty for the database)
+5.  Click **"Create"**. This will automatically trigger a new deployment.
 
--   Scroll down and click the **"Create Web Service"** button.
--   Render will now build and deploy your application. The first build may take a few minutes as it installs dependencies and initializes the database.
+### 4. Configure the Start Command and Database Initialization
+
+Railway uses the `Procfile` to start the app, but we need to ensure the database is initialized during the build.
+
+1.  In your service, go to the **"Settings"** tab.
+2.  Scroll down to the **"Deploy"** section.
+3.  In the **"Build Command"** field, enter the following:
+    ```
+    pip install -r requirements.txt && python init_db.py
+    ```
+4.  The **"Start Command"** should be automatically detected from the `Procfile` (`gunicorn app:app`). If not, you can enter it here.
+5.  Railway saves automatically, and these new settings will be applied on the next deploy.
 
 ### 5. Access Your Deployed Application
 
--   Once the deployment is complete, Render will provide you with a public URL (e.g., `https-your-app-name.onrender.com`). You can access your GPA calculator at this URL.
+1.  After the deployment finishes successfully, go to the **"Settings"** tab for your service.
+2.  In the **"Domains"** section, you will find a public URL ending in `.up.railway.app`.
+3.  Click this URL to access your live GPA calculator.
 
 ---
 
