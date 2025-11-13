@@ -11,7 +11,8 @@ import os
 # Set a secret key for session management. In a real app, use a more secure key.
 app.config['SECRET_KEY'] = os.urandom(24)
 
-DATABASE = 'database.db'
+# Vercel provides a writable /tmp directory.
+DATABASE = '/tmp/database.db'
 
 @contextmanager
 def get_db():

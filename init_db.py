@@ -1,7 +1,14 @@
 import sqlite3
+from flask import Flask, jsonify
+import os
 
-def init_db():
-    conn = sqlite3.connect('database.db')
+app = Flask(__name__)
+
+# Note: Vercel provides a writable /tmp directory.
+DB_PATH = '/tmp/database.db'
+
+def init_db_logic():
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
     # Create courses table
@@ -101,6 +108,14 @@ def init_db():
     conn.commit()
     conn.close()
 
-if __name__ == '__main__':
-    init_db()
-    print("Database initialized successfully.")
+# The Vercel entrypoint is this 'app' object.
+# The route is defined in vercel.json. Any request to /init-db will be routed here.
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def handle_init_db(path):
+    try:
+        init_db_logic()
+        return jsonify(message="Database initialized successfully.")
+    except Exception as e:
+        print(f"Error during database initialization: {e}")
+        return jsonify(error=str(e)), 500
