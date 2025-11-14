@@ -107,11 +107,12 @@ def get_courses(part, semester):
 
 def calculate_gpa_cgpa(grades_data):
     grade_points = {'A': 5, 'B': 4, 'C': 3, 'D': 2, 'E': 1, 'F': 0}
-    total_credit_points_cumulative, total_units_cumulative = 0, 0
+    total_credit_points_cumulative, total_units_cumulative, total_courses_cumulative = 0, 0, 0
     semester_results = {}
 
     for semester, courses in grades_data.items():
         semester_tcp, semester_tnu = 0, 0
+        total_courses_cumulative += len(courses)
         for course in courses:
             unit, grade = course['course_unit'], course.get('grade')
             if grade in grade_points:
@@ -125,7 +126,8 @@ def calculate_gpa_cgpa(grades_data):
     cumulative_gpa = total_credit_points_cumulative / total_units_cumulative if total_units_cumulative > 0 else 0
     return {
         "semester_gpas": semester_results, "cumulative_gpa": round(cumulative_gpa, 2),
-        "total_units_taken": total_units_cumulative, "total_credit_points": total_credit_points_cumulative
+        "total_units_taken": total_units_cumulative, "total_credit_points": total_credit_points_cumulative,
+        "total_courses": total_courses_cumulative
     }
 
 @app.route('/api/add_semester', methods=['POST'])
@@ -193,7 +195,10 @@ def save_calculation():
 
         session['last_calculation_results'] = {
             "cumulative_gpa": results['cumulative_gpa'],
-            "semester_gpas": [{"part": s['part'], "semester": s['semester'], "gpa": results['semester_gpas'].get(s['session_key'], 0)} for s in session['semesters_data']]
+            "semester_gpas": [{"part": s['part'], "semester": s['semester'], "gpa": results['semester_gpas'].get(s['session_key'], 0)} for s in session['semesters_data']],
+            "total_units_taken": results['total_units_taken'],
+            "total_credit_points": results['total_credit_points'],
+            "total_courses": results['total_courses']
         }
         session.pop('semesters_data', None)
         session.pop('carry_over_courses', None)
@@ -256,8 +261,15 @@ def load_calculation(record_id):
 @app.route('/results')
 def results_page():
     if 'last_calculation_results' not in session:
+        flash("No results to display. Please calculate your GPA first.", "info")
         return redirect(url_for('index'))
+
     results = session.pop('last_calculation_results', None)
+
+    if not results:
+        flash("Could not retrieve results. Please try again.", "error")
+        return redirect(url_for('index'))
+
     return render_template('results.html', results=results)
 
 @app.route('/blis-records-management/login', methods=['GET', 'POST'])
