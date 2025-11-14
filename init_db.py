@@ -1,43 +1,45 @@
 import sqlite3
-from flask import Flask, jsonify
 import os
 
-app = Flask(__name__)
+DATABASE_PATH = '/tmp/database.db'
 
-# Note: Vercel provides a writable /tmp directory.
-DB_PATH = '/tmp/database.db'
+def initialize_database():
+    """Initializes the database and populates it with course data."""
+    if os.path.exists(DATABASE_PATH):
+        print("Database already exists. Skipping initialization.")
+        return
 
-def init_db_logic():
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
+    try:
+        conn = sqlite3.connect(DATABASE_PATH)
+        cursor = conn.cursor()
 
-    # Create courses table
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS courses (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            part TEXT NOT NULL,
-            semester TEXT NOT NULL,
-            course_code TEXT NOT NULL UNIQUE,
-            course_title TEXT NOT NULL,
-            course_unit INTEGER NOT NULL
-        )
-    ''')
+        # Create courses table
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS courses (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                part TEXT NOT NULL,
+                semester TEXT NOT NULL,
+                course_code TEXT NOT NULL UNIQUE,
+                course_title TEXT NOT NULL,
+                course_unit INTEGER NOT NULL
+            )
+        ''')
 
-    # Create gpa_records table
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS gpa_records (
-            record_id TEXT PRIMARY KEY,
-            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-            semester_data TEXT,
-            final_gpa REAL,
-            final_cgpa REAL,
-            total_units_taken INTEGER,
-            total_credit_points INTEGER
-        )
-    ''')
+        # Create gpa_records table
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS gpa_records (
+                record_id TEXT PRIMARY KEY,
+                timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+                semester_data TEXT,
+                final_gpa REAL,
+                final_cgpa REAL,
+                total_units_taken INTEGER,
+                total_credit_points INTEGER
+            )
+        ''')
 
-    # Populate courses table
-    courses = [
+        # Populate courses table
+        courses = [
         # Part 1 - Harmattan Semester
         ('1', 'Harmattan', 'EDU101', 'Introduction to Teaching Profession', 2),
         ('1', 'Harmattan', 'ETL101', 'Introduction to Information Work', 2),
@@ -100,22 +102,20 @@ def init_db_logic():
         ('3', 'Rain', 'ETL332', 'Information Resources in Subject Area', 2)
     ]
 
-    cursor.executemany('''
-        INSERT OR IGNORE INTO courses (part, semester, course_code, course_title, course_unit)
-        VALUES (?, ?, ?, ?, ?)
-    ''', courses)
+        cursor.executemany('''
+            INSERT OR IGNORE INTO courses (part, semester, course_code, course_title, course_unit)
+            VALUES (?, ?, ?, ?, ?)
+        ''', courses)
 
-    conn.commit()
-    conn.close()
+        conn.commit()
+        print("Database initialized and populated successfully.")
+    except sqlite3.Error as e:
+        print(f"Database error: {e}")
+    finally:
+        if conn:
+            conn.close()
 
-# The Vercel entrypoint is this 'app' object.
-# The route is defined in vercel.json. Any request to /init-db will be routed here.
-@app.route('/', defaults={'path': ''})
-@app.route('/<path:path>')
-def handle_init_db(path):
-    try:
-        init_db_logic()
-        return jsonify(message="Database initialized successfully.")
-    except Exception as e:
-        print(f"Error during database initialization: {e}")
-        return jsonify(error=str(e)), 500
+if __name__ == '__main__':
+    # For local development, you might want to use a local db name
+    DATABASE_PATH = 'database.db'
+    initialize_database()

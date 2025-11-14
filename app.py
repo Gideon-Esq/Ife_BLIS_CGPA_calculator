@@ -4,6 +4,7 @@ from contextlib import contextmanager
 import os
 import uuid
 import json
+from init_db import initialize_database
 
 app = Flask(__name__)
 import os
@@ -13,6 +14,9 @@ app.config['SECRET_KEY'] = os.urandom(24)
 
 # Vercel provides a writable /tmp directory.
 DATABASE = '/tmp/database.db'
+
+# Automatically initialize the database if it doesn't exist
+initialize_database()
 
 @contextmanager
 def get_db():
