@@ -90,7 +90,11 @@ def get_courses(part, semester):
                     course['grade'] = saved_grades[course['course_code']]
 
             carry_overs = session.get('carry_over_courses', [])
-            relevant_carry_overs = [co for co in carry_overs if co['semester'] == semester]
+            # Bug Fix: Ensure carry-overs only appear in subsequent academic parts.
+            relevant_carry_overs = [
+                co for co in carry_overs
+                if co['semester'] == semester and int(part) > int(co['part'])
+            ]
             course_codes = {c['course_code'] for c in courses}
             for co in relevant_carry_overs:
                 if co['course_code'] not in course_codes:
