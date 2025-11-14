@@ -476,3 +476,33 @@ details summary {
         grid-template-columns: 1fr 1fr;
     }
 }
+
+/* --- Signature Section --- */
+.signature-section {
+    margin-top: 4rem;
+    margin-right: 2rem; /* Indent from the right */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end; /* Align to the right */
+}
+
+.signature-line {
+    border-bottom: 2px solid var(--text-color);
+    padding-bottom: 5px;
+    width: 250px; /* Width of the signature line */
+    text-align: center;
+}
+
+.signature-name {
+    font-family: 'Brighton Signature', sans-serif;
+    font-size: 2.5rem; /* Adjust size as needed */
+    color: #333;
+}
+
+.signature-title {
+    margin-top: 0.5rem;
+    font-weight: 600;
+    color: var(--secondary-color);
+    text-align: center;
+    width: 250px; /* Match the line width */
+}

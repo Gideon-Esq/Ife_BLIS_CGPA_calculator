@@ -224,6 +224,23 @@ def admin_panel():
         return "Error connecting to the database.", 500
     return render_template('admin.html', records=records)
 
+@app.route('/api/delete_record/<record_id>', methods=['POST'])
+def delete_record(record_id):
+    if not session.get('admin_authenticated'):
+        flash("Unauthorized access.", "error")
+        return redirect(url_for('admin_login'))
+
+    try:
+        with get_db() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute("DELETE FROM gpa_records WHERE record_id = %s", (record_id,))
+                conn.commit()
+        flash(f"Record {record_id[:8]}... deleted successfully.", "success")
+    except (psycopg2.Error, ValueError) as e:
+        flash(f"Error deleting record: {e}", "error")
+
+    return redirect(url_for('admin_panel'))
+
 @app.route('/api/blis-records-management/records', methods=['GET'])
 def get_admin_records():
     try:
